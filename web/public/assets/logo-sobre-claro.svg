@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 834 208" width="834" height="208" role="img" aria-label="Utama"><g transform="translate(24 24) scale(1)">
+    <path d="M0 0 H36 V96 A28 28 0 0 0 92 96 V0 H128 V96 A64 64 0 0 1 0 96 Z" fill="#2B1B17"/>
+    <g transform="translate(150 0)"><path d="M0 0 H112 V36 H74 V160 H38 V36 H0 Z" fill="#2B1B17"/></g>
+    <g transform="translate(284 0)"><path d="M84 0 L168 74 H144 V160 H24 V74 H0 Z M68 160 V128 A16 16 0 0 1 100 128 V160 Z M81.2 78 L86.8 78 L86.8 81.36 L90.16 81.36 L90.16 85.84 L94.64 85.84 L94.64 89.2 L98 89.2 L98 94.8 L94.64 94.8 L94.64 98.16 L90.16 98.16 L90.16 102.64 L86.8 102.64 L86.8 106 L81.2 106 L81.2 102.64 L77.84 102.64 L77.84 98.16 L73.36 98.16 L73.36 94.8 L70 94.8 L70 89.2 L73.36 89.2 L73.36 85.84 L77.84 85.84 L77.84 81.36 L81.2 81.36 Z M86.52 92 A2.52 2.52 0 1 0 81.48 92 A2.52 2.52 0 1 0 86.52 92 Z" fill="#E2623F" fill-rule="evenodd"/><path d="M112 12 H134 V52 H112 Z" fill="#E2623F"/></g>
+    <g transform="translate(474 0)"><path d="M0 160 V0 H34 L75 74 L116 0 H150 V160 H114 V70 L84 128 H66 L36 70 V160 Z" fill="#2B1B17"/></g>
+    <g transform="translate(646 0)"><path d="M0 160 L40 0 H100 L140 160 H104 L98 134 H42 L36 160 Z M50 104 H90 L70 24 Z" fill="#2B1B17" fill-rule="evenodd"/></g>
+  </g></svg>

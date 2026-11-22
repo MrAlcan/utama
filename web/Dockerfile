@@ -1,0 +1,16 @@
+FROM node:24-bookworm-slim
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+# Estas variables se incorporan al código del navegador en el build.
+ARG NEXT_PUBLIC_API_URL=http://localhost:3001/api
+ARG NEXT_PUBLIC_MODE=mock
+ARG NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY=
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL NEXT_PUBLIC_MODE=$NEXT_PUBLIC_MODE NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY=$NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY
+RUN npm run build
+
+EXPOSE 3000
+CMD ["npm", "start"]

@@ -1,0 +1,55 @@
+# Utama — entorno completo.
+#   docker compose up -d db           -> solo Postgres (para desarrollar con npm run start:dev)
+#   docker compose up --build         -> base de datos + API + web
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: utama-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: utama
+      POSTGRES_PASSWORD: utama
+      POSTGRES_DB: utama
+    ports:
+      - "5440:5432"
+    volumes:
+      - utama-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U utama -d utama"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./api
+    container_name: utama-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://utama:utama@db:5432/utama?schema=public
+      PORT: 3001
+      WEB_ORIGIN: http://localhost:3000
+      PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - utama-uploads:/app/uploads
+
+  web:
+    build:
+      context: ./web
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3001/api
+        NEXT_PUBLIC_MODE: mock
+    container_name: utama-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  utama-pgdata:
+  utama-uploads:

@@ -1,0 +1,6 @@
+{
+  "statusCode": 409,
+  "message": "Este inmueble ya tiene un anticrético activo.",
+  "codigo": "FOLIO_OCUPADO",
+  "onchain": true
+}

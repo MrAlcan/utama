@@ -1,0 +1,13 @@
+# HTTPS automático (Let's Encrypt). El dominio sale de la variable DOMINIO (deploy/.env).
+{$DOMINIO} {
+	encode gzip
+	handle /api/* {
+		reverse_proxy api:3001
+	}
+	handle /uploads/* {
+		reverse_proxy api:3001
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+}

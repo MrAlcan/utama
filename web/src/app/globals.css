@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+/* Variante "dark": se activa con data-theme="dark" en <html>. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---- Colores fijos de la marca (no cambian con el tema) ---- */
+@theme {
+  --color-lana: #F6ECDA;
+  --color-tierra: #2B1B17;
+  --color-oro: #E3A72F;
+  --color-lago: #1B7F86;
+  --color-coral: #E2623F;
+  --color-cochinilla: #8F1D2C;
+  --color-morado: #4A2A5C;
+  --color-noche: #241338;
+}
+
+/* ---- Colores con tema: claro por defecto, oscuro con data-theme="dark" ---- */
+:root {
+  color-scheme: light;
+  --c-crema: #F6ECDA;
+  --c-papel: #FFF9EE;
+  --c-barra: #FFF9EE;
+  --c-tinta: #2B1B17;
+  --c-suave: #6A584A;
+  --c-borde: #E2D2B8;
+  --c-terracota: #C84A28;
+  --c-terracota-oscuro: #A53A1D;
+  --c-terracota-claro: #F8E3D8;
+  --c-boton: #C84A28;
+  --c-andino: #17707A;
+  --c-andino-claro: #DCF0EE;
+  --c-oro-claro: #FBEFCF;
+  --c-oro-texto: #7F5508;
+  --c-peligro: #B3261E;
+  --c-peligro-claro: #FBE4E1;
+
+
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --c-crema: #181020;
+  --c-papel: #241A31;
+  --c-barra: #1B1226;
+  --c-tinta: #F3E8D6;
+  --c-suave: #B7A793;
+  --c-borde: #3A2D49;
+  --c-terracota: #F08A66;
+  --c-terracota-oscuro: #F5A987;
+  --c-terracota-claro: #3D2224;
+  --c-boton: #C2452A;
+  --c-andino: #5ED0D7;
+  --c-andino-claro: #123A3F;
+  --c-oro-claro: #3D3114;
+  --c-oro-texto: #F2C75C;
+  --c-peligro: #FF8F86;
+  --c-peligro-claro: #3F1C1E;
+
+
+}
+
+@theme inline {
+  --color-crema: var(--c-crema);
+  --color-papel: var(--c-papel);
+  --color-barra: var(--c-barra);
+  --color-tinta: var(--c-tinta);
+  --color-suave: var(--c-suave);
+  --color-borde: var(--c-borde);
+  --color-terracota: var(--c-terracota);
+  --color-terracota-oscuro: var(--c-terracota-oscuro);
+  --color-terracota-claro: var(--c-terracota-claro);
+  --color-boton: var(--c-boton);
+  --color-andino: var(--c-andino);
+  --color-andino-claro: var(--c-andino-claro);
+  --color-oro-claro: var(--c-oro-claro);
+  --color-oro-texto: var(--c-oro-texto);
+  --color-peligro: var(--c-peligro);
+  --color-peligro-claro: var(--c-peligro-claro);
+  --font-display: "Bitter Variable", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Los hijos de una cuadrícula pueden encogerse (evita que un campo ancho empuje la página). */
+.grid > * {
+  min-width: 0;
+}
+
+body {
+  background-color: var(--c-crema);
+  color: var(--c-tinta);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-x: hidden;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+::placeholder {
+  color: var(--c-suave);
+  opacity: 0.75;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+  accent-color: var(--color-cochinilla);
+}
+
+[role="listbox"] {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-borde) transparent;
+}
+
+/* Campo de archivo con el estilo de los botones de Utama */
+input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+  font-size: 0.875rem;
+  color: var(--c-suave);
+}
+input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  cursor: pointer;
+  border: 0;
+  border-radius: 0.375rem;
+  background: color-mix(in oklab, var(--c-borde) 70%, transparent);
+  padding: 0.5rem 0.9rem;
+  font-weight: 700;
+  color: var(--c-tinta);
+  transition: background 0.15s;
+}
+input[type="file"]::file-selector-button:hover {
+  background: var(--c-oro-claro);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold tracking-wide transition disabled:cursor-not-allowed disabled:opacity-50;
+    clip-path: polygon(0 5px, 5px 5px, 5px 0, calc(100% - 5px) 0, calc(100% - 5px) 5px, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 5px calc(100% - 5px), 0 calc(100% - 5px));
+  }
+  .btn-primario {
+    @apply bg-boton text-white hover:brightness-110;
+  }
+  .btn-andino {
+    @apply bg-lago text-white hover:brightness-110;
+  }
+  .btn-oscuro {
+    @apply bg-tinta text-crema hover:opacity-90;
+  }
+  .btn-sec {
+    @apply bg-borde/70 text-tinta hover:bg-oro-claro;
+  }
+  .btn-peligro {
+    @apply bg-peligro-claro text-peligro hover:brightness-105;
+  }
+  .card {
+    @apply rounded-lg border-2 border-borde bg-papel p-5;
+    box-shadow: 4px 4px 0 rgba(43, 27, 23, 0.1);
+  }
+  [data-theme="dark"] .card {
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+  }
+  .input {
+    @apply w-full rounded-md border-2 border-borde bg-papel px-3 py-2 text-base text-tinta outline-none focus:border-cochinilla focus:ring-2 focus:ring-oro/40 sm:text-sm;
+  }
+  .label {
+    @apply mb-1 block text-xs font-bold uppercase tracking-wider text-suave;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-md border-2 border-borde bg-papel px-3 py-1.5 text-sm font-semibold transition hover:border-terracota disabled:cursor-not-allowed;
+  }
+  .chip-activo {
+    @apply border-cochinilla bg-cochinilla text-lana hover:border-cochinilla;
+  }
+}
+
+/* ---- Mapa (Leaflet) ---- */
+.mapa { background: var(--c-borde); z-index: 0; }
+.mapa .leaflet-container { font-family: var(--font-sans); background: var(--c-borde); }
+/* En el tema oscuro se invierte el mapa base para que no encandile. */
+[data-theme="dark"] .mapa .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.7); }
+.mapa .leaflet-control-zoom a { background: var(--c-papel); color: var(--c-tinta); border-color: var(--c-borde); }
+.mapa .leaflet-control-attribution { background: color-mix(in srgb, var(--c-papel) 85%, transparent); color: var(--c-suave); font-size: 10px; }
+.mapa .leaflet-control-attribution a { color: var(--c-suave); }
+.pin-utama { background: none; border: 0; }
+.pin-utama svg { display: block; filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.35)); transition: transform 0.15s; transform-origin: 50% 100%; }
+.pin-utama.sel svg { transform: scale(1.3); }

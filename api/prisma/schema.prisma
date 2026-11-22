@@ -1,0 +1,285 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Rol {
+  INQUILINO
+  DUENO
+  AMBOS
+  VERIFICADOR
+}
+
+enum TipoInmueble {
+  VIVIENDA
+  LOCAL
+  OFICINA
+  GALPON
+  HABITACION
+}
+
+enum TipoContrato {
+  ANTICRETICO
+  ALQUILER_GARANTIA
+  MIXTO
+}
+
+enum EstadoInmueble {
+  BORRADOR
+  PUBLICADO
+  EN_ANTICRETICO
+}
+
+enum PlantillaReglas {
+  FLEXIBLE
+  MODERADA
+  ESTRICTA
+}
+
+enum EstadoContrato {
+  CREANDO
+  PENDIENTE_INSCRIPCION
+  CANCELADO
+  ACTIVO
+  EN_CHECKOUT
+  EN_DISPUTA
+  FINALIZADO
+  RENOVADO
+}
+
+enum EstadoVisita {
+  CONFIRMADA
+  CANCELADA
+  REALIZADA
+}
+
+enum EstadoOferta {
+  PENDIENTE
+  ACEPTADA
+  RECHAZADA
+  CONTRAOFERTA
+}
+
+enum FaseInventario {
+  CHECKIN
+  CHECKOUT
+}
+
+model Usuario {
+  id                  String   @id @default(cuid())
+  nombre              String
+  email               String?  @unique
+  wallet              String?  @unique
+  rol                 Rol      @default(AMBOS)
+  paisResidencia      String   @default("BO")
+  nivel               String   @default("NUEVO_VERIFICADO")
+  identidadVerificada Boolean  @default(true)
+  ahorroVaquita       Float    @default(0)
+  ciDocUrl            String?
+  selfieUrl           String?
+  custodia            String   @default("DEMO")
+  fondeadoEn          DateTime?
+  verificacionPagadaTx String?  @unique
+  creadoEn            DateTime @default(now())
+
+  inmuebles Inmueble[] @relation("DuenoInmuebles")
+  visitas   Visita[]
+  ofertas   Oferta[]
+  comoDueno Contrato[] @relation("ContratoDueno")
+  comoInq   Contrato[] @relation("ContratoInquilino")
+  calificacionesDadas     Calificacion[] @relation("CalifDe")
+  calificacionesRecibidas Calificacion[] @relation("CalifA")
+}
+
+model Inmueble {
+  id              String          @id @default(cuid())
+  duenoId         String
+  dueno           Usuario         @relation("DuenoInmuebles", fields: [duenoId], references: [id])
+  titulo          String
+  descripcion     String
+  tipo            TipoInmueble
+  tipoContrato    TipoContrato    @default(ANTICRETICO)
+  ciudad          String
+  zona            String
+  direccion       String
+  /// Posición exacta del inmueble (WGS84). Públicamente solo se muestra una zona aproximada.
+  latitud         Float?
+  longitud        Float?
+  superficieM2    Int
+  ambientes       Int             @default(1)
+  dormitorios     Int             @default(0)
+  banos           Int             @default(1)
+  amoblado        Boolean         @default(false)
+  montoUsdc       Float
+  plazoMeses      Int             @default(24)
+  garantiaPct     Int             @default(15)
+  plantillaReglas PlantillaReglas @default(MODERADA)
+  reglasRecomendadas Boolean      @default(false)
+  folioNumero     String
+  folioHash       String          @unique
+  folioVerificado Boolean         @default(false)
+  /// txHash de `atestar_folio` en testnet (null en mock o si aún no se atestó).
+  atestadoTx      String?
+  folioDocUrl     String?
+  ciDocUrl        String?
+  inmuebleVisitado Boolean        @default(false)
+  inscritoDDRR    Boolean         @default(false)
+  estado          EstadoInmueble  @default(BORRADOR)
+  creadoEn        DateTime        @default(now())
+
+  fotos          Foto[]
+  disponibilidad Disponibilidad[]
+  visitas        Visita[]
+  ofertas        Oferta[]
+  contratos      Contrato[]
+}
+
+model Foto {
+  id         String   @id @default(cuid())
+  inmuebleId String
+  inmueble   Inmueble @relation(fields: [inmuebleId], references: [id], onDelete: Cascade)
+  url        String
+  orden      Int      @default(0)
+}
+
+model Disponibilidad {
+  id         String   @id @default(cuid())
+  inmuebleId String
+  inmueble   Inmueble @relation(fields: [inmuebleId], references: [id], onDelete: Cascade)
+  inicio     DateTime
+  fin        DateTime
+  visita     Visita?
+
+  @@index([inmuebleId, inicio])
+}
+
+model Visita {
+  id               String         @id @default(cuid())
+  disponibilidadId String         @unique
+  disponibilidad   Disponibilidad @relation(fields: [disponibilidadId], references: [id], onDelete: Cascade)
+  inmuebleId       String
+  inmueble         Inmueble       @relation(fields: [inmuebleId], references: [id], onDelete: Cascade)
+  inquilinoId      String
+  inquilino        Usuario        @relation(fields: [inquilinoId], references: [id])
+  estado           EstadoVisita   @default(CONFIRMADA)
+  nota             String?
+  creadoEn         DateTime       @default(now())
+}
+
+model Oferta {
+  id          String       @id @default(cuid())
+  inmuebleId  String
+  inmueble    Inmueble     @relation(fields: [inmuebleId], references: [id], onDelete: Cascade)
+  inquilinoId String
+  inquilino   Usuario      @relation(fields: [inquilinoId], references: [id])
+  montoUsdc   Float
+  plazoMeses  Int
+  mensaje     String?
+  estado      EstadoOferta @default(PENDIENTE)
+  creadoEn    DateTime     @default(now())
+}
+
+model Contrato {
+  id              String         @id @default(cuid())
+  inmuebleId      String
+  inmueble        Inmueble       @relation(fields: [inmuebleId], references: [id])
+  duenoId         String
+  dueno           Usuario        @relation("ContratoDueno", fields: [duenoId], references: [id])
+  inquilinoId     String
+  inquilino       Usuario        @relation("ContratoInquilino", fields: [inquilinoId], references: [id])
+  montoUsdc       Float
+  montoDuenoUsdc  Float
+  garantiaUsdc    Float
+  devueltoUsdc    Float          @default(0)
+  folioHash       String
+  plazoMeses      Int
+  inicio          DateTime       @default(now())
+  vencimiento     DateTime
+  estado          EstadoContrato @default(ACTIVO)
+  modo            String         @default("mock")
+  onchainId       String?
+  txHash          String?
+  metodoPago      String         @default("USDC")
+  tipoCambio      Float?
+  montoBs         Float?
+  renovacion      Json?
+  renovaciones    Int            @default(0)
+  disputaMotivo   String?
+  salidaAnticipada Boolean       @default(false)
+  penalidadUsdc   Float          @default(0)
+  ddrrUrl         String?
+  escrowId        String?
+  comisionUsdc    Float          @default(0)
+  pagadoDuenoUsdc Float          @default(0)
+  limiteInscripcion DateTime?
+  paso            String?
+  ultimoError     String?
+  intentosReconciliar Int        @default(0)
+  ultimoIntentoEn DateTime?
+  creadoEn        DateTime       @default(now())
+
+  inventarios   Inventario[]
+  eventos       Evento[]
+  calificaciones Calificacion[]
+
+  @@index([folioHash, estado])
+}
+
+model Inventario {
+  id               String         @id @default(cuid())
+  contratoId       String
+  contrato         Contrato       @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  fase             FaseInventario
+  items            Json
+  firmaDueno       Boolean        @default(false)
+  firmaInquilino   Boolean        @default(false)
+  hash             String?
+  creadoEn         DateTime       @default(now())
+
+  @@unique([contratoId, fase])
+}
+
+model Evento {
+  id         String   @id @default(cuid())
+  contratoId String
+  contrato   Contrato @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  tipo       String
+  detalle    String?
+  txHash     String?
+  creadoEn   DateTime @default(now())
+}
+
+model Calificacion {
+  id         String   @id @default(cuid())
+  contratoId String
+  contrato   Contrato @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  deId       String
+  de         Usuario  @relation("CalifDe", fields: [deId], references: [id])
+  aId        String
+  a          Usuario  @relation("CalifA", fields: [aId], references: [id])
+  estrellas  Int
+  comentario String?
+  creadoEn   DateTime @default(now())
+
+  @@unique([contratoId, deId])
+}
+
+/// Auditoría de cada tx on-chain enviada por el backend (fase 2).
+model OperacionOnchain {
+  id         String   @id @default(cuid())
+  creadaEn   DateTime @default(now())
+  contratoId String?
+  tipo       String
+  rol        String?
+  txHash     String?
+  estado     String
+  error      String?
+  modo       String
+
+  @@index([contratoId])
+}

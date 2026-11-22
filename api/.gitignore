@@ -1,0 +1,3 @@
+# Secretos de testnet/producción: nunca al repo (es público)
+.env.*
+!.env.example

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.next/
+.env
+.env.local
+*.log
+api/uploads/*
+!api/uploads/.gitkeep
+
+# Rust / Soroban
+contracts/target/
+contracts/**/target/

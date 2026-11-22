@@ -1,0 +1,14 @@
+{
+  "tipoCambioBob": 11.92,
+  "comisionPlataformaPct": 1,
+  "comisionTwPct": 0.3,
+  "red": "testnet",
+  "escala": 1000,
+  "contratoFolios": "CDEMOFOLIOS000000000000000000000000000000000000000000000",
+  "usdc": {
+    "code": "USDC",
+    "issuer": "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5"
+  },
+  "tesoro": "GTESORO…",
+  "tarifaVerificacionUsdc": 30
+}

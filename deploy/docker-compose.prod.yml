@@ -1,0 +1,63 @@
+# Producción en la VPS. Desde la raíz del repo:
+#   docker compose -f deploy/docker-compose.prod.yml --env-file web/.env.produccion up -d --build
+# Requiere api/.env.produccion y web/.env.produccion (los entrega el Dev-1 por canal privado; nunca a git).
+name: utama
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: utama
+      POSTGRES_PASSWORD: utama
+      POSTGRES_DB: utama
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U utama -d utama"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ../api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: ../api/.env.produccion
+    volumes:
+      - uploads:/app/uploads
+
+  web:
+    build:
+      context: ../web
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_MODE: ${NEXT_PUBLIC_MODE:-testnet}
+        NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY: ${NEXT_PUBLIC_POLLAR_PUBLISHABLE_KEY}
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMINIO: ${DOMINIO:-utama.devsjec.com}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - web
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:

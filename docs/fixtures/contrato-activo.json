@@ -1,0 +1,84 @@
+{
+  "id": "ctr-demo-1",
+  "inmuebleId": "inm-1",
+  "duenoId": "u-carlos",
+  "inquilinoId": "u-maria",
+  "montoUsdc": 30000,
+  "montoDuenoUsdc": 25200,
+  "garantiaUsdc": 4500,
+  "comisionUsdc": 300,
+  "devueltoUsdc": 0,
+  "pagadoDuenoUsdc": 25124.4,
+  "folioHash": "9f2c…(sha256 hex)",
+  "plazoMeses": 24,
+  "inicio": "2026-11-22T14:00:00.000Z",
+  "vencimiento": "2028-11-22T14:00:00.000Z",
+  "limiteInscripcion": "2026-12-22T14:00:00.000Z",
+  "estado": "ACTIVO",
+  "modo": "testnet",
+  "escrowId": "CDEMOESCROW0000000000000000000000000000000000000000000000",
+  "onchainId": "CDEMOESCROW0000000000000000000000000000000000000000000000",
+  "txHash": "a1b2c3…",
+  "paso": null,
+  "ultimoError": null,
+  "metodoPago": "USDC",
+  "inmueble": {
+    "id": "inm-1",
+    "titulo": "Departamento de 2 dormitorios en Equipetrol",
+    "zona": "Equipetrol",
+    "ciudad": "Santa Cruz",
+    "tipo": "VIVIENDA",
+    "plantillaReglas": "MODERADA"
+  },
+  "dueno": {
+    "id": "u-carlos",
+    "nombre": "Carlos Mamani",
+    "nivel": "ORO",
+    "wallet": "GCARLOS…"
+  },
+  "inquilino": {
+    "id": "u-maria",
+    "nombre": "María Quispe",
+    "nivel": "BRONCE",
+    "wallet": "GMARIA…"
+  },
+  "eventos": [
+    {
+      "id": "ev1",
+      "tipo": "ESCROW_CREADO",
+      "detalle": "Escrow multi-release en Trustless Work (3 hitos)",
+      "txHash": "tx_escrow…",
+      "creadoEn": "2026-11-22T14:00:05.000Z"
+    },
+    {
+      "id": "ev2",
+      "tipo": "FOLIO_BLOQUEADO",
+      "detalle": "utama-folios.bloquear",
+      "txHash": "tx_bloquear…",
+      "creadoEn": "2026-11-22T14:00:12.000Z"
+    },
+    {
+      "id": "ev3",
+      "tipo": "DEPOSITO",
+      "detalle": "María depositó 30.000 USDC en el escrow",
+      "txHash": "tx_fund…",
+      "creadoEn": "2026-11-22T14:00:20.000Z"
+    },
+    {
+      "id": "ev4",
+      "tipo": "INSCRIPCION_CONFIRMADA",
+      "detalle": "Folio con anticrético inscrito en DDRR",
+      "txHash": null,
+      "creadoEn": "2026-11-25T10:00:00.000Z"
+    },
+    {
+      "id": "ev5",
+      "tipo": "HITO_LIBERADO",
+      "detalle": "Hitos 0 y 1: 25.124,40 a Carlos y 299,10 al tesoro (neto de 0,3 % de Trustless Work)",
+      "txHash": "tx_release…",
+      "creadoEn": "2026-11-25T10:00:09.000Z"
+    }
+  ],
+  "inventarios": [],
+  "calificaciones": []
+}
