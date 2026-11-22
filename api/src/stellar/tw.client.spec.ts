@@ -51,3 +51,19 @@ describe('TwClient', () => {
     expect(g).toHaveBeenCalledTimes(3);
   });
 });
+
+describe('TwClient timeout', () => {
+  const colgado = () => vi.fn((_u: string, init: any) => new Promise<Response>((_, rej) => init.signal.addEventListener('abort', () => rej(init.signal.reason))));
+  it('reintenta una vez un GET que no responde y luego da TW_TIMEOUT', async () => {
+    const f = colgado();
+    const tw = new TwClient({ url: 'http://tw', apiKey: 'k', fetchFn: f as any, timeoutMs: 20 });
+    await expect(tw.getEscrow('C1')).rejects.toMatchObject({ code: 'TW_TIMEOUT', status: 504 });
+    expect(f).toHaveBeenCalledTimes(2);
+  });
+  it('no reintenta el envío de una tx firmada', async () => {
+    const f = colgado();
+    const tw = new TwClient({ url: 'http://tw', apiKey: 'k', fetchFn: f as any, timeoutMs: 20 });
+    await expect(tw.sendTransaction('xdr')).rejects.toMatchObject({ code: 'TW_TIMEOUT' });
+    expect(f).toHaveBeenCalledTimes(1);
+  });
+});

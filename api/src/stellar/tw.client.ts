@@ -39,7 +39,12 @@ interface Opts {
   apiKey: string;
   fetchFn?: typeof fetch;
   sleep?: (ms: number) => Promise<void>;
+  /** Tiempo máximo por petición (la API beta de TW a veces no responde). Por defecto 25 s. */
+  timeoutMs?: number;
 }
+
+const ENVIO = '/stellar/send-transaction';
+const esTimeout = (e: any) => e?.name === 'TimeoutError' || e?.name === 'AbortError';
 
 const BASE = '/escrow/multi-release/v2';
 
@@ -55,11 +60,20 @@ export class TwClient {
 
   private async req<T>(method: 'GET' | 'POST', path: string, body?: unknown): Promise<T> {
     for (let intento = 0; ; intento++) {
-      const res = await this.fetchFn(`${this.url}${path}`, {
-        method,
-        headers: { 'x-api-key': this.o.apiKey, 'content-type': 'application/json', accept: 'application/json' },
-        body: body === undefined ? undefined : JSON.stringify(body),
-      });
+      let res: Response;
+      try {
+        res = await this.fetchFn(`${this.url}${path}`, {
+          method,
+          headers: { 'x-api-key': this.o.apiKey, 'content-type': 'application/json', accept: 'application/json' },
+          body: body === undefined ? undefined : JSON.stringify(body),
+          signal: AbortSignal.timeout(this.o.timeoutMs ?? 25_000),
+        });
+      } catch (e) {
+        // Un timeout se reintenta una vez, salvo el envío de una tx firmada (podría haberse enviado ya).
+        if (esTimeout(e) && intento < 1 && path !== ENVIO) continue;
+        if (esTimeout(e)) throw new TwError('TW_TIMEOUT', 504, undefined, 'Trustless Work no respondió a tiempo');
+        throw e;
+      }
       const data: any = await res.json().catch(() => ({}));
       if (res.status === 429 && intento < 2) {
         await this.sleep(500 * 2 ** intento);
